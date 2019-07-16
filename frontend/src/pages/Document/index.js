@@ -4,11 +4,10 @@ import { Container } from './styles';
 
 import Sidebar from '../../components/Sidebar';
 import Navbar from '../../components/Navbar';
-import { saveDocument, getAllDocuments } from '../../services/documentService';
+import { saveDocument, getAllDocuments, moveToBlacklist, deleteDocument } from '../../services/documentService';
 import { MessageComponent } from '../../components/message';
 import ReactTable from 'react-table';
 import "react-table/react-table.css";
-
 
 class Document extends Component {
   state = {
@@ -33,7 +32,6 @@ class Document extends Component {
     this.setState({ message: '', messageClass: ''});
     e.preventDefault();
     saveDocument(this.state.document, this.state.selectedOption).then(() => {
-      this.setState({ message: 'Cadastro realizado com sucesso', messageClass: 'success-message'});
       getAllDocuments().then((response) => {
         this.setState({documentList: response.data})
       });
@@ -46,22 +44,38 @@ class Document extends Component {
     this.setState({selectedOption: e.target.value, document: ''})
   }
 
-  moveToBlackList = (row) => {
-    console.log('teste', row)
+  handleBlacklist = (documentId) => {
+    moveToBlacklist(documentId).then(() => {
+      getAllDocuments().then((response) => {
+        this.setState({documentList: response.data})
+      });
+    }).catch((error) => {
+      this.setState({ message: "Ocorreu um erro ao mover o documento para a blacklist", messageClass: 'error-message'});
+    });
+  }
+
+  handleDelete = (documentId) => {
+    deleteDocument(documentId).then(() => {
+      getAllDocuments().then((response) => {
+        this.setState({documentList: response.data})
+      });
+    }).catch((error) => {
+      this.setState({ message: "Ocorreu um erro ao remover o documento", messageClass: 'error-message'});
+    });
   }
 
   render() {
     const {selectedOption} = this.state
 
     const columns = [{
-        Header:'Number',
+        Header:'CPF/CNPJ',
         accessor: 'number',
         sortMethod: (a, b) => {
          return a > b ? 1 : -1;
         }
       },
       {
-        Header:'Type',
+        Header:'Tipo',
         accessor: 'type',
         sortMethod: (a, b) => {
           return a > b ? 1 : -1;
@@ -80,28 +94,28 @@ class Document extends Component {
             onChange={event => onChange(event.target.value)}
             style={{ width: "100%" }}
             value={filter ? filter.value : "all"}>
-              <option value='all'>Show All</option>
+              <option value='all'>Mostrar tudo</option>
               <option value='CPF'>CPF</option>
               <option value='CNPJ'>CNPJ</option>
           </select>
       },
       {
-        Header: 'Create Date',
+        Header: 'Data de criação',
         accessor: 'createdate',
         sortMethod: (a, b) => {
           return a > b ? 1 : -1;
         }
       },
       {
-        Header: 'Actions',
+        Header: 'Ações',
         accessor: 'actions',
         filterable: false,
         width: 150,
         style: {'textAlign': 'center'},
         Cell: row => (
           <div>
-            <button title='Blacklist' className="btn btn-dark fa fa-list action-button" onClick={this.moveToBlackList(row.original.id)}/>
-            <button title='Remover' className="btn btn-danger fa fa-trash action-button" />
+            <button title='Blacklist' className="btn btn-dark fa fa-list action-button" onClick={() => this.handleBlacklist(row.original.id)}/>
+            <button title='Remover' className="btn btn-danger fa fa-trash action-button" onClick={() => this.handleDelete(row.original.id)} />
           </div>  
          
         )

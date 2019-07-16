@@ -23,8 +23,8 @@ func main() {
 	r := gin.Default()
 	r.Use(handlers.CorsMiddleware())
 
-	mongoRepository := cpfCnpj.MongoRepo{Db: db}
-	CnfCnpjService := cpfCnpj.NewCpfCnpjService(&mongoRepository)
+	mongoRepository := cpfCnpj.NewMongoRepo(db)
+	CnfCnpjService := cpfCnpj.NewCpfCnpjService(mongoRepository)
 
 	validadorRoute := routes.NewValidatorRoute(CnfCnpjService)
 	mainRouter := r.Group("/validator")

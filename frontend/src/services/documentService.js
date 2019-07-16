@@ -2,13 +2,10 @@ import api from './serviceApi';
 
 const VALIDATE_PATH = '/validator/v1/validate';
 const SAVE_PATH = '/validator/v1/save';
-const GETALL_PATH = '/validator/v1/getAll';
-
-/*export const countAlerts = async () => {
-  const header = { headers: { 'Content-Type': 'application/json' } };
-  const result = await api.get(`${ALERT_PATH}/count`, header);
-  return result;
-};*/
+const GETALL_PATH = '/validator/v1/getDocuments';
+const MOVE_TO_BLACKLIST_PATH = '/validator/v1/blacklist';
+const DELETE_PATH = '/validator/v1/delete';
+const GETBLACKLIST_PATH = '/validator/v1/getBlacklist';
 
 export const validateDocument = async (documentNumber) => {
   const header = { headers: { 'Content-Type': 'application/json' } };
@@ -33,9 +30,29 @@ export const getAllDocuments = async () => {
   return result;
 }
 
+export const moveToBlacklist = async (documentId) => {
+  const header = { headers: { 'Content-Type': 'application/json' } };
+  const result = await api.get(`${MOVE_TO_BLACKLIST_PATH}/${documentId}`, header);
+  return result;
+}
+
+export const deleteDocument = async (documentId) => {
+  const header = { headers: { 'Content-Type': 'application/json' } };
+  const result = await api.delete(`${DELETE_PATH}/${documentId}`, header);
+  return result;
+}
+
+
+export const getBlacklist = async () => {
+  const header = { headers: { 'Content-Type': 'application/json' } };
+  const result = await api.get(`${GETBLACKLIST_PATH}`, header);
+  return result;
+}
+
 export default {
   validateDocument,
   saveDocument,
-  getAllDocuments
+  getAllDocuments,
+  moveToBlacklist
   };
   

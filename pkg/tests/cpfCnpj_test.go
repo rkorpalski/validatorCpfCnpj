@@ -199,7 +199,7 @@ func TestSaveCpfCnpj(t *testing.T) {
 		Number: "892.385.660-62",
 		Type: "CPF",
 	}
-	dbMock := mock.Repository{}
+	dbMock := mocks.Repository{}
 	dbMock.On("Save", cpfCnpjMock).Return(nil)
 
 	service := cpfCnpj.NewCpfCnpjService(&dbMock)
@@ -212,7 +212,7 @@ func TestSaveInvalidCnpj(t *testing.T) {
 		Number: "03.689.262/0001-78",
 		Type: "CNPJ",
 	}
-	dbMock := mock.Repository{}
+	dbMock := mocks.Repository{}
 	dbMock.On("Save", cpfCnpjMock).Return(nil)
 
 	service := cpfCnpj.NewCpfCnpjService(&dbMock)
@@ -226,16 +226,16 @@ func TestGetAllDocuments(t *testing.T) {
 			Number: "03.689.262/0001-78",
 			Type: "CNPJ",
 			BlackList: false,
-			CreateDate: time.Now(),
+			CreateDate: time.Now().String(),
 		},
 		{
 			Number: "892.385.660-62",
 			Type: "CPF",
 			BlackList: false,
-			CreateDate: time.Now(),
+			CreateDate: time.Now().String(),
 		},
 	}
-	dbMock := mock.Repository{}
+	dbMock := mocks.Repository{}
 	dbMock.On("GetAllDocuments").Return(listMock, nil)
 
 	service := cpfCnpj.NewCpfCnpjService(&dbMock)

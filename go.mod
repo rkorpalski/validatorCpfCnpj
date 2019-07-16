@@ -11,6 +11,7 @@ require (
 	github.com/google/go-cmp v0.3.0 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/mattn/go-isatty v0.0.8 // indirect
+	github.com/pkg/errors v0.8.1
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/stretchr/testify v1.3.0
 	github.com/tidwall/pretty v1.0.0 // indirect

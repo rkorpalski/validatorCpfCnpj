@@ -90,8 +90,16 @@ func (s *CpfCnpjService) Save(cpfCnpj CpfCnpj) error {
 	return s.repo.Save(cpfCnpj)
 }
 
-func (s *CpfCnpjService) GetAllDocuments() ([]CpfCnpj, error) {
-	return s.repo.GetAllDocuments()
+func (s *CpfCnpjService) GetAllDocuments(isBlacklsit bool) ([]CpfCnpj, error) {
+	return s.repo.GetDocuments(isBlacklsit)
+}
+
+func (s *CpfCnpjService) MoveToBlacklist(documentId string) error {
+	return s.repo.MoveToBlacklist(documentId)
+}
+
+func (s *CpfCnpjService) DeleteDocument(documentId string) error {
+	return s.repo.DeleteDocument(documentId)
 }
 
 func ValidateCpf(cpf string) bool {
