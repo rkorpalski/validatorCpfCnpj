@@ -3,7 +3,7 @@ import { Container } from './styles';
 
 import Sidebar from '../../components/Sidebar';
 import Navbar from '../../components/Navbar';
-import { } from '../../services/documentService';
+import { getBlacklist, removeToBlacklist } from '../../services/documentService';
 import { MessageComponent } from '../../components/message';
 import ReactTable from 'react-table';
 import "react-table/react-table.css";
@@ -16,7 +16,19 @@ class Blacklist extends Component {
   };
 
   componentDidMount() {
-  
+    getBlacklist().then((response) => {
+      this.setState({documentList: response.data})
+    });
+  }
+
+  handleRemove = (documentId) => {
+    removeToBlacklist(documentId).then(() => {
+      getBlacklist().then((response) => {
+        this.setState({documentList: response.data})
+      });
+    }).catch((error) => {
+      this.setState({ message: "Ocorreu um erro ao remover o documento da blacklist", messageClass: 'error-message'});
+    });
   }
 
   render() {
@@ -64,11 +76,11 @@ class Blacklist extends Component {
         Header: 'Ações',
         accessor: 'actions',
         filterable: false,
-        width: 150,
+        width: 100,
         style: {'textAlign': 'center'},
         Cell: row => (
           <div>
-            <button title='Remover' className="btn btn-danger fa fa-trash action-button" onClick={() => this.handleDelete(row.original.id)} />
+            <button title='Remover' className="btn btn-danger fa fa-trash action-button" onClick={() => this.handleRemove(row.original.id)} />
           </div>  
          
         )
@@ -84,9 +96,9 @@ class Blacklist extends Component {
             <MessageComponent text = {this.state.message} classe = {this.state.messageClass}/>
             <br/>
             <div className="container-fluid">
-            <div>
-                <h4>Blacklist</h4>
-            </div>
+              <div className="form_main">
+                  <h4 className="heading">Blacklist</h4>
+              </div>
               <div>
                 <ReactTable data={this.state.documentList} columns={columns}  defaultPageSize={10}
                   className="-striped -highlight" filterable />

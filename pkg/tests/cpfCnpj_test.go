@@ -58,12 +58,12 @@ func TestCheckInvalidCpf(t *testing.T) {
 	}
 
 	for _, cpf:= range invalidsCpfs {
-		isValid := cpfCnpj.CheckInvalidCpf(cpf)
+		isValid := cpfCnpj.CheckKnowInvalidCpf(cpf)
 		assert.True(t, isValid)
 	}
 
 	for _, cpf:= range validCpfs {
-		isValid := cpfCnpj.CheckInvalidCpf(cpf)
+		isValid := cpfCnpj.CheckKnowInvalidCpf(cpf)
 		assert.False(t, isValid)
 	}
 }
@@ -184,12 +184,12 @@ func TestCheckInvalidCnpj(t *testing.T) {
 	}
 
 	for _, cnpj:= range invalidsCnpjs {
-		isInvalid := cpfCnpj.CheckInvalidCnpj(cnpj)
+		isInvalid := cpfCnpj.CheckKnowInvalidCnpj(cnpj)
 		assert.True(t, isInvalid)
 	}
 
 	for _, cnpj:= range validCnpjs {
-		isInvalid := cpfCnpj.CheckInvalidCnpj(cnpj)
+		isInvalid := cpfCnpj.CheckKnowInvalidCnpj(cnpj)
 		assert.False(t, isInvalid)
 	}
 }
@@ -236,10 +236,10 @@ func TestGetAllDocuments(t *testing.T) {
 		},
 	}
 	dbMock := mocks.Repository{}
-	dbMock.On("GetAllDocuments").Return(listMock, nil)
+	dbMock.On("GetDocuments", false).Return(listMock, nil)
 
 	service := cpfCnpj.NewCpfCnpjService(&dbMock)
-	results, err := service.GetAllDocuments()
+	results, err := service.GetAllDocuments(false)
 	assert.NoError(t, err)
 	assert.Len(t, results, 2)
 }

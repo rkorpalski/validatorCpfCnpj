@@ -1,7 +1,7 @@
 package cpfCnpj
 
 import (
-	"errors"
+	"github.com/pkg/errors"
 	"github.com/rkorpalski/validatorCpfCnpj/pkg/messages"
 	"regexp"
 	"strconv"
@@ -60,7 +60,7 @@ func (s *CpfCnpjService) Validate(documentNumber string) (bool, error){
 
 	regex, err := regexp.Compile(CpfRegex)
 	if err != nil {
-		return false, err
+		return false, errors.Wrap(err, messages.RegexCompileError)
 	}
 
 	if match := regex.MatchString(documentNumber); match {
@@ -69,7 +69,7 @@ func (s *CpfCnpjService) Validate(documentNumber string) (bool, error){
 
 	regex, err = regexp.Compile(CnpjRegex)
 	if err != nil {
-		return false, err
+		return false, errors.Wrap(err, messages.RegexCompileError)
 	}
 
 	if match := regex.MatchString(documentNumber); match {
@@ -102,9 +102,21 @@ func (s *CpfCnpjService) DeleteDocument(documentId string) error {
 	return s.repo.DeleteDocument(documentId)
 }
 
+func (s *CpfCnpjService) RemoveFromBlacklist(documentId string) error {
+	return s.repo.RemoveFromBlacklist(documentId)
+}
+
+func (s *CpfCnpjService) FindByDocument(document string) ([]CpfCnpj, error) {
+	return s.repo.FindByDocument(document)
+}
+/*
+	Valida um CPF calculando os dois últimos dígitos.
+	Para entender a regra de validação de CPF ver:
+	https://souforce.cloud/regra-de-validacao-para-cpf-e-cnpj/
+*/
 func ValidateCpf(cpf string) bool {
 
-	if isInvalid := CheckInvalidCpf(cpf); isInvalid {
+	if isInvalid := CheckKnowInvalidCpf(cpf); isInvalid {
 		return false
 	}
 
@@ -120,7 +132,11 @@ func ValidateCpf(cpf string) bool {
 	return false
 }
 
-func CheckInvalidCpf(cpf string) bool {
+/*
+	Existem CPFs que passam pela validação, mas são reconhecidos como inválidos.
+	Este método verifica se o CPF é um destes.
+*/
+func CheckKnowInvalidCpf(cpf string) bool {
 	for _, invalidCpf := range invalidsCpfs {
 		if cpf == invalidCpf {
 			return true
@@ -162,9 +178,14 @@ func CalculateCpfDigit(digits []int) int{
 	return result
 }
 
+/*
+	Valida um CNPJ calculando os dois últimos dígitos.
+	Para entender a regra de validação de CNPJ ver:
+	https://souforce.cloud/regra-de-validacao-para-cpf-e-cnpj/
+*/
 func ValidateCnpj(cnpj string) bool {
 
-	if isInvalid := CheckInvalidCnpj(cnpj); isInvalid {
+	if isInvalid := CheckKnowInvalidCnpj(cnpj); isInvalid {
 		return false
 	}
 
@@ -180,7 +201,11 @@ func ValidateCnpj(cnpj string) bool {
 	return false
 }
 
-func CheckInvalidCnpj(cnpj string) bool {
+/*
+	Existem CNPJs que passam pela validação, mas são reconhecidos como inválidos.
+	Este método verifica se o CNPJ é um destes.
+*/
+func CheckKnowInvalidCnpj(cnpj string) bool {
 	for _, invalidCnpj := range invalidsCnpjs {
 		if cnpj == invalidCnpj {
 			return true

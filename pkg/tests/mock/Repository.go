@@ -10,13 +10,27 @@ type Repository struct {
 	mock.Mock
 }
 
-// GetAllDocuments provides a mock function with given fields:
-func (_m *Repository) GetAllDocuments() ([]cpfCnpj.CpfCnpj, error) {
-	ret := _m.Called()
+// DeleteDocument provides a mock function with given fields: documentId
+func (_m *Repository) DeleteDocument(documentId string) error {
+	ret := _m.Called(documentId)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(documentId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// GetDocuments provides a mock function with given fields: isBlacklist
+func (_m *Repository) GetDocuments(isBlacklist bool) ([]cpfCnpj.CpfCnpj, error) {
+	ret := _m.Called(isBlacklist)
 
 	var r0 []cpfCnpj.CpfCnpj
-	if rf, ok := ret.Get(0).(func() []cpfCnpj.CpfCnpj); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func(bool) []cpfCnpj.CpfCnpj); ok {
+		r0 = rf(isBlacklist)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]cpfCnpj.CpfCnpj)
@@ -24,8 +38,8 @@ func (_m *Repository) GetAllDocuments() ([]cpfCnpj.CpfCnpj, error) {
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
+	if rf, ok := ret.Get(1).(func(bool) error); ok {
+		r1 = rf(isBlacklist)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -35,6 +49,20 @@ func (_m *Repository) GetAllDocuments() ([]cpfCnpj.CpfCnpj, error) {
 
 // MoveToBlacklist provides a mock function with given fields: documentId
 func (_m *Repository) MoveToBlacklist(documentId string) error {
+	ret := _m.Called(documentId)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(documentId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// RemoveFromBlacklist provides a mock function with given fields: documentId
+func (_m *Repository) RemoveFromBlacklist(documentId string) error {
 	ret := _m.Called(documentId)
 
 	var r0 error

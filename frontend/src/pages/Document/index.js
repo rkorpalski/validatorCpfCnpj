@@ -4,7 +4,7 @@ import { Container } from './styles';
 
 import Sidebar from '../../components/Sidebar';
 import Navbar from '../../components/Navbar';
-import { saveDocument, getAllDocuments, moveToBlacklist, deleteDocument } from '../../services/documentService';
+import { saveDocument, getAllDocuments, moveToBlacklist, deleteDocument, findDocument } from '../../services/documentService';
 import { MessageComponent } from '../../components/message';
 import ReactTable from 'react-table';
 import "react-table/react-table.css";
@@ -19,49 +19,75 @@ class Document extends Component {
   };
 
   componentDidMount() {
-    getAllDocuments().then((response) => {
-      this.setState({documentList: response.data})
-    });
+    this.findAllDocuments();
   }
 
   handleDocumentChange = (e) => {
-    this.setState({document: e.target.value})
+    this.setState({document: e.target.value});
   }
 
   handleSubmit = (e) => {
     this.setState({ message: '', messageClass: ''});
     e.preventDefault();
     saveDocument(this.state.document, this.state.selectedOption).then(() => {
-      getAllDocuments().then((response) => {
-        this.setState({documentList: response.data})
-      });
+      this.findAllDocuments();
     }).catch((error) => {
       this.setState({ message: error.response.data, messageClass: 'error-message'});
     });
   }
 
   handleTipoChange = (e) => {
-    this.setState({selectedOption: e.target.value, document: ''})
+    this.setState({selectedOption: e.target.value, document: ''});
   }
 
   handleBlacklist = (documentId) => {
     moveToBlacklist(documentId).then(() => {
-      getAllDocuments().then((response) => {
-        this.setState({documentList: response.data})
-      });
+      this.findAllDocuments();
     }).catch((error) => {
-      this.setState({ message: "Ocorreu um erro ao mover o documento para a blacklist", messageClass: 'error-message'});
+      this.setState({ message: 'Ocorreu um erro ao mover o documento para a blacklist', messageClass: 'error-message'});
     });
   }
 
   handleDelete = (documentId) => {
     deleteDocument(documentId).then(() => {
-      getAllDocuments().then((response) => {
-        this.setState({documentList: response.data})
-      });
+      this.findAllDocuments();
     }).catch((error) => {
       this.setState({ message: "Ocorreu um erro ao remover o documento", messageClass: 'error-message'});
     });
+  }
+
+  handleFind = () => {
+    const {document, selectedOption} = this.state
+    if(document === ''){
+      this.findAllDocuments();
+    } else {
+      let regexp
+      if (selectedOption === 'CPF') {
+        regexp = new RegExp(/^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$/);
+      } else {
+        regexp = new RegExp(/^\d{2}\.?\d{3}\.?\d{3}\/?(:?\d{3}[1-9]|\d{2}[1-9]\d|\d[1-9]\d{2}|[1-9]\d{3})-?\d{2}$/);
+      }
+      const isValid = regexp.test(document)
+      if(isValid){
+        findDocument(document).then((response) => {
+          this.setState({documentList: response.data});
+        });
+      } else {
+        this.setState({ message: 'O documento está incompleto. Por favor forneça um documento válido', messageClass: 'error-message'});
+      }
+    }
+  }
+
+  findAllDocuments = () => {
+    this.setState({ message: '', messageClass: 'hidden'});
+    getAllDocuments().then((response) => {
+      this.setState({documentList: response.data});
+    });
+  }
+
+  handleClean = () => {
+    this.setState({document: ''});
+    this.findAllDocuments();
   }
 
   render() {
@@ -131,10 +157,11 @@ class Document extends Component {
             <MessageComponent text = {this.state.message} classe = {this.state.messageClass}/>
             <br/>
             <div className="container-fluid">
-            <div>
-                <h4>Cadastrar CPF/CNPJ</h4>
+            <div className= "form_main">
+                <h4 className="heading">Consultar CPF/CNPJ</h4>
                 <form onSubmit={this.handleSubmit}>
-                  <div className="form-check">
+                  <div >
+                  <label>Tipo:  </label>
                     <label className="input-tipo">
                       <input 
                         type="radio"
@@ -171,7 +198,9 @@ class Document extends Component {
                    </div>
                   )}
                     <div className="form-group">
-                        <input type="submit" value="Cadastrar" className="btn btn-primary"/>
+                        <input type="submit" value="Cadastrar" className="btn btn-dark button"/>
+                        <input type="button" value="Consultar" className="btn btn-dark button" onClick={() => this.handleFind()}/>
+                        <input type="button" value="Limpar" className="btn btn-dark button" onClick={() => this.handleClean()}/>
                     </div>
                 </form>
             </div>

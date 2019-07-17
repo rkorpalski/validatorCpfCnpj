@@ -3,9 +3,11 @@ import api from './serviceApi';
 const VALIDATE_PATH = '/validator/v1/validate';
 const SAVE_PATH = '/validator/v1/save';
 const GETALL_PATH = '/validator/v1/getDocuments';
-const MOVE_TO_BLACKLIST_PATH = '/validator/v1/blacklist';
+const MOVE_TO_BLACKLIST_PATH = '/validator/v1/blacklist/add';
 const DELETE_PATH = '/validator/v1/delete';
 const GETBLACKLIST_PATH = '/validator/v1/getBlacklist';
+const REMOVE_FROM_BLACKLIST_PATH = '/validator/v1/blacklist/remove';
+const FIND_PATH = '/validator/v1/find';
 
 export const validateDocument = async (documentNumber) => {
   const header = { headers: { 'Content-Type': 'application/json' } };
@@ -49,10 +51,24 @@ export const getBlacklist = async () => {
   return result;
 }
 
+export const removeToBlacklist = async (documentId) => {
+  const header = { headers: { 'Content-Type': 'application/json' } };
+  const result = await api.get(`${REMOVE_FROM_BLACKLIST_PATH}/${documentId}`, header);
+  return result;
+}
+
+export const findDocument = async (documentNumber) => {
+  const header = { headers: { 'Content-Type': 'application/json' } };
+  const result = await api.post(`${FIND_PATH}`, {number: documentNumber}, header);
+  return result;
+}
+
 export default {
   validateDocument,
   saveDocument,
   getAllDocuments,
-  moveToBlacklist
+  moveToBlacklist,
+  removeToBlacklist,
+  findDocument
   };
   

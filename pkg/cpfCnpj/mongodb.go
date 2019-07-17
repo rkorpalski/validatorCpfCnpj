@@ -47,7 +47,6 @@ func (r *MongoRepo) GetDocuments(isBlacklist bool) ([]CpfCnpj, error) {
 
 	results := make([]CpfCnpj, 0)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 
@@ -83,4 +82,27 @@ func (r *MongoRepo) DeleteDocument(documentId string) error {
 		return errors.Wrap(err, messages.DeleteDocumentError)
 	}
 	return nil
+}
+
+func (r *MongoRepo) RemoveFromBlacklist(documentId string) error {
+	_, err := r.Db.Collection("document").UpdateOne(context.Background(), bson.D{{"_id", documentId}},
+		bson.D{{"$set", bson.D{{"blacklist", false}}}})
+	if err != nil {
+		return errors.Wrap(err, messages.BlacklistRemoveError)
+	}
+	return nil
+}
+
+func (r *MongoRepo) FindByDocument(document string) ([]CpfCnpj, error) {
+	var cpfCnpj CpfCnpj
+	results := make([]CpfCnpj, 0)
+	err := r.Db.Collection("document").FindOne(context.Background(), bson.D{{"number", document}}).Decode(&cpfCnpj)
+	if err != nil {
+		if err.Error() == messages.NoResultsMongoError {
+			return results, nil
+		}
+		return nil, errors.Wrap(err, messages.FindDocumentError)
+	}
+	results = append(results, cpfCnpj)
+	return results, nil
 }

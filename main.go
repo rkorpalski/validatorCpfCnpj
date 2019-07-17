@@ -13,7 +13,6 @@ import (
 )
 
 func main() {
-	os.Setenv("TZ", "America/Sao_Paulo")
 	db, err := initializeDatabase()
 	if err != nil {
 		log.Fatal(err)
