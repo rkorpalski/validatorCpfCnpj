@@ -6,5 +6,5 @@ type Repository interface {
 	MoveToBlacklist(documentId string) error
 	DeleteDocument(documentId string) error
 	RemoveFromBlacklist(documentId string) error
-	FindByDocument(document string) ([]CpfCnpj, error)
+	FindByDocument(document string, findInBlacklist bool) ([]CpfCnpj, error)
 }

@@ -80,9 +80,19 @@ func (s *CpfCnpjService) Validate(documentNumber string) (bool, error){
 }
 
 func (s *CpfCnpjService) Save(cpfCnpj CpfCnpj) error {
+	results, err := s.repo.FindByDocument(cpfCnpj.Number, true)
+	if err != nil {
+		return errors.Wrap(err, messages.FindDocumentError)
+	}
+	if len(results) > 0 {
+		if results[0].BlackList {
+			return errors.New(messages.DocumenInBlacklistError)
+		}
+		return errors.New(messages.DocumentRegisteredError)
+	}
 	isValid, err := s.Validate(cpfCnpj.Number)
 	if err != nil {
-		return err
+		return errors.Wrap(err, messages.SaveDocumentError)
 	}
 	if !isValid {
 		return errors.New(messages.DocumentInvalidError)
@@ -107,10 +117,10 @@ func (s *CpfCnpjService) RemoveFromBlacklist(documentId string) error {
 }
 
 func (s *CpfCnpjService) FindByDocument(document string) ([]CpfCnpj, error) {
-	return s.repo.FindByDocument(document)
+	return s.repo.FindByDocument(document, false)
 }
 /*
-	Valida um CPF calculando os dois últimos dígitos.
+	Valida um CPF calculando os dígitos verificadores.
 	Para entender a regra de validação de CPF ver:
 	https://souforce.cloud/regra-de-validacao-para-cpf-e-cnpj/
 */
@@ -179,7 +189,7 @@ func CalculateCpfDigit(digits []int) int{
 }
 
 /*
-	Valida um CNPJ calculando os dois últimos dígitos.
+	Valida um CNPJ calculando os dígitos verificadores.
 	Para entender a regra de validação de CNPJ ver:
 	https://souforce.cloud/regra-de-validacao-para-cpf-e-cnpj/
 */

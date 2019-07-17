@@ -24,6 +24,29 @@ func (_m *Repository) DeleteDocument(documentId string) error {
 	return r0
 }
 
+// FindByDocument provides a mock function with given fields: document, findInBlacklist
+func (_m *Repository) FindByDocument(document string, findInBlacklist bool) ([]cpfCnpj.CpfCnpj, error) {
+	ret := _m.Called(document, findInBlacklist)
+
+	var r0 []cpfCnpj.CpfCnpj
+	if rf, ok := ret.Get(0).(func(string, bool) []cpfCnpj.CpfCnpj); ok {
+		r0 = rf(document, findInBlacklist)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]cpfCnpj.CpfCnpj)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, bool) error); ok {
+		r1 = rf(document, findInBlacklist)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetDocuments provides a mock function with given fields: isBlacklist
 func (_m *Repository) GetDocuments(isBlacklist bool) ([]cpfCnpj.CpfCnpj, error) {
 	ret := _m.Called(isBlacklist)

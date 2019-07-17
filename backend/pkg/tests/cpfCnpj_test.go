@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"github.com/pkg/errors"
 	"github.com/rkorpalski/validatorCpfCnpj/backend/pkg/cpfCnpj"
 	"github.com/rkorpalski/validatorCpfCnpj/backend/pkg/messages"
 	"github.com/rkorpalski/validatorCpfCnpj/backend/pkg/tests/mock"
@@ -200,6 +201,7 @@ func TestSaveCpfCnpj(t *testing.T) {
 		Type: "CPF",
 	}
 	dbMock := mocks.Repository{}
+	dbMock.On("FindByDocument", "892.385.660-62", true).Return([]cpfCnpj.CpfCnpj{}, nil)
 	dbMock.On("Save", cpfCnpjMock).Return(nil)
 
 	service := cpfCnpj.NewCpfCnpjService(&dbMock)
@@ -213,11 +215,28 @@ func TestSaveInvalidCnpj(t *testing.T) {
 		Type: "CNPJ",
 	}
 	dbMock := mocks.Repository{}
+	dbMock.On("FindByDocument", "03.689.262/0001-78", true).Return([]cpfCnpj.CpfCnpj{}, nil)
 	dbMock.On("Save", cpfCnpjMock).Return(nil)
 
 	service := cpfCnpj.NewCpfCnpjService(&dbMock)
 	err := service.Save(cpfCnpjMock)
 	assert.Error(t, err, messages.DocumentInvalidError)
+}
+
+func TestSaveDocumentInBlacklist(t *testing.T) {
+	cpfCnpjMock := cpfCnpj.CpfCnpj{
+		Number: "03.689.262/0001-78",
+		Type: "CNPJ",
+	}
+	result := make([]cpfCnpj.CpfCnpj, 0)
+	result = append(result, cpfCnpjMock)
+	dbMock := mocks.Repository{}
+	dbMock.On("FindByDocument", "03.689.262/0001-78", true).Return(result, nil)
+	dbMock.On("Save", cpfCnpjMock).Return(nil)
+
+	service := cpfCnpj.NewCpfCnpjService(&dbMock)
+	err := service.Save(cpfCnpjMock)
+	assert.Error(t, err, messages.DocumenInBlacklistError)
 }
 
 func TestGetAllDocuments(t *testing.T) {
@@ -242,4 +261,31 @@ func TestGetAllDocuments(t *testing.T) {
 	results, err := service.GetAllDocuments(false)
 	assert.NoError(t, err)
 	assert.Len(t, results, 2)
+}
+
+func TestFindDocumentNoResults(t *testing.T) {
+	dbMock := mocks.Repository{}
+	dbMock.On("FindByDocument", "03.689.262/0001-78", false).Return([]cpfCnpj.CpfCnpj{}, errors.New(messages.NoResultsMongoError))
+
+	service := cpfCnpj.NewCpfCnpjService(&dbMock)
+	results, err := service.FindByDocument("03.689.262/0001-78")
+	assert.Len(t, results, 0)
+	assert.Error(t, err, messages.NoResultsMongoError)
+}
+
+func TestFindDocument(t *testing.T) {
+	cpfCnpjMock := cpfCnpj.CpfCnpj{
+		Number: "03.689.262/0001-78",
+		Type: "CNPJ",
+	}
+	result := make([]cpfCnpj.CpfCnpj, 0)
+	result = append(result, cpfCnpjMock)
+
+	dbMock := mocks.Repository{}
+	dbMock.On("FindByDocument", "03.689.262/0001-78", false).Return(result, nil)
+
+	service := cpfCnpj.NewCpfCnpjService(&dbMock)
+	results, err := service.FindByDocument("03.689.262/0001-78")
+	assert.Len(t, results, 1)
+	assert.NoError(t, err)
 }

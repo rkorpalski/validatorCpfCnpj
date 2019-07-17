@@ -93,10 +93,18 @@ func (r *MongoRepo) RemoveFromBlacklist(documentId string) error {
 	return nil
 }
 
-func (r *MongoRepo) FindByDocument(document string) ([]CpfCnpj, error) {
+func (r *MongoRepo) FindByDocument(document string, findInBlacklist bool) ([]CpfCnpj, error) {
 	var cpfCnpj CpfCnpj
 	results := make([]CpfCnpj, 0)
-	err := r.Db.Collection("document").FindOne(context.Background(), bson.D{{"number", document}}).Decode(&cpfCnpj)
+
+	var filter bson.D
+	if findInBlacklist {
+		filter = bson.D{{"number", document}}
+	} else {
+		filter = bson.D{{"number", document}, {"blacklist", false}}
+	}
+
+	err := r.Db.Collection("document").FindOne(context.Background(), filter).Decode(&cpfCnpj)
 	if err != nil {
 		if err.Error() == messages.NoResultsMongoError {
 			return results, nil

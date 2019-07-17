@@ -27,7 +27,7 @@ class Document extends Component {
   }
 
   handleSubmit = (e) => {
-    this.setState({ message: '', messageClass: ''});
+    this.setState({ message: '', messageClass: '', document: ''});
     e.preventDefault();
     saveDocument(this.state.document, this.state.selectedOption).then(() => {
       this.findAllDocuments();
