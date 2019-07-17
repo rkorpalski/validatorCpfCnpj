@@ -1,9 +1,9 @@
 package tests
 
 import (
-	"github.com/rkorpalski/validatorCpfCnpj/pkg/cpfCnpj"
-	"github.com/rkorpalski/validatorCpfCnpj/pkg/messages"
-	"github.com/rkorpalski/validatorCpfCnpj/pkg/tests/mock"
+	"github.com/rkorpalski/validatorCpfCnpj/backend/pkg/cpfCnpj"
+	"github.com/rkorpalski/validatorCpfCnpj/backend/pkg/messages"
+	"github.com/rkorpalski/validatorCpfCnpj/backend/pkg/tests/mock"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"

@@ -1,4 +1,4 @@
-module github.com/rkorpalski/validatorCpfCnpj
+module github.com/rkorpalski/validatorCpfCnpj/backend
 
 go 1.12
 

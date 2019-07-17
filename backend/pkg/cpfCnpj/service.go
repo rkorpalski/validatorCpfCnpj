@@ -2,7 +2,7 @@ package cpfCnpj
 
 import (
 	"github.com/pkg/errors"
-	"github.com/rkorpalski/validatorCpfCnpj/pkg/messages"
+	"github.com/rkorpalski/validatorCpfCnpj/backend/pkg/messages"
 	"regexp"
 	"strconv"
 	"strings"

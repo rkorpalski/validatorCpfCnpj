@@ -3,20 +3,19 @@ package main
 import (
 	"context"
 	"github.com/gin-gonic/gin"
-	"github.com/rkorpalski/validatorCpfCnpj/api/handlers"
-	"github.com/rkorpalski/validatorCpfCnpj/api/routes"
-	"github.com/rkorpalski/validatorCpfCnpj/pkg/cpfCnpj"
+	"github.com/rkorpalski/validatorCpfCnpj/backend/api/handlers"
+	"github.com/rkorpalski/validatorCpfCnpj/backend/api/routes"
+	"github.com/rkorpalski/validatorCpfCnpj/backend/conf/env"
+	"github.com/rkorpalski/validatorCpfCnpj/backend/pkg/cpfCnpj"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
-	"os"
 )
 
 func main() {
 	db, err := initializeDatabase()
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(1)
 	}
 
 	r := gin.Default()
@@ -26,19 +25,18 @@ func main() {
 	CnfCnpjService := cpfCnpj.NewCpfCnpjService(mongoRepository)
 
 	validadorRoute := routes.NewValidatorRoute(CnfCnpjService)
-	mainRouter := r.Group("/validator")
+	mainRouter := r.Group(env.ApiContext())
 	validadorRoute.BuildRoutes(mainRouter)
 
 
-	err = r.Run("127.0.0.1:8080")
+	err = r.Run(env.AppBaseUrl())
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(1)
 	}
 }
 
 func initializeDatabase() (*mongo.Database, error){
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	client, err := mongo.NewClient(options.Client().ApplyURI(env.MongoBaseUrl()))
 	if err != nil {
 		return nil, err
 	}
@@ -46,5 +44,5 @@ func initializeDatabase() (*mongo.Database, error){
 	if err != nil {
 		return nil, err
 	}
-	return client.Database("CpfCnpj"), nil
+	return client.Database(env.AppDatabase()), nil
 }

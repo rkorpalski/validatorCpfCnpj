@@ -3,8 +3,8 @@ package routes
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/rkorpalski/validatorCpfCnpj/pkg/cpfCnpj"
-	"github.com/rkorpalski/validatorCpfCnpj/pkg/util"
+	"github.com/rkorpalski/validatorCpfCnpj/backend/pkg/cpfCnpj"
+	"github.com/rkorpalski/validatorCpfCnpj/backend/pkg/util"
 	"net/http"
 	"time"
 )
