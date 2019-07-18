@@ -275,17 +275,17 @@ func TestFindDocumentNoResults(t *testing.T) {
 
 func TestFindDocument(t *testing.T) {
 	cpfCnpjMock := cpfCnpj.CpfCnpj{
-		Number: "03.689.262/0001-78",
+		Number: "84.490.358/0001-30",
 		Type: "CNPJ",
 	}
 	result := make([]cpfCnpj.CpfCnpj, 0)
 	result = append(result, cpfCnpjMock)
 
 	dbMock := mocks.Repository{}
-	dbMock.On("FindByDocument", "03.689.262/0001-78", false).Return(result, nil)
+	dbMock.On("FindByDocument", "84.490.358/0001-30", false).Return(result, nil)
 
 	service := cpfCnpj.NewCpfCnpjService(&dbMock)
-	results, err := service.FindByDocument("03.689.262/0001-78")
+	results, err := service.FindByDocument("84.490.358/0001-30")
 	assert.Len(t, results, 1)
 	assert.NoError(t, err)
 }

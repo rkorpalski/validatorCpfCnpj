@@ -1,11 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Sidebar from '../../components/Sidebar';
+import Navbar from '../components/Navbar';
 
-describe('Sidebar', () => {
+describe('Navbar', () => {
   // testa o component puro, sem renderizar os filhos
   it('should render correctly with no props', () => {
-    const component = shallow(<Sidebar />);
+    const component = shallow(<Navbar />);
     expect(component).toMatchSnapshot();
   });
 });

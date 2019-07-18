@@ -70,7 +70,9 @@ class Document extends Component {
       const isValid = regexp.test(document)
       if(isValid){
         findDocument(document).then((response) => {
-          this.setState({documentList: response.data});
+          this.setState({documentList: response.data,message: '', messageClass: 'hidden'});
+        }).catch((error) => {
+          this.setState({ message: error.response.data, messageClass: 'error-message'});
         });
       } else {
         this.setState({ message: 'O documento está incompleto. Por favor forneça um documento válido', messageClass: 'error-message'});

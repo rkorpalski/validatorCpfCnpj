@@ -91,12 +91,10 @@ func (s *CpfCnpjService) Save(cpfCnpj CpfCnpj) error {
 		return errors.New(messages.DocumentRegisteredError)
 	}
 	isValid, err := s.Validate(cpfCnpj.Number)
-	if err != nil {
-		return errors.Wrap(err, messages.SaveDocumentError)
-	}
-	if !isValid {
+	if err != nil || !isValid {
 		return errors.New(messages.DocumentInvalidError)
 	}
+
 	return s.repo.Save(cpfCnpj)
 }
 
@@ -117,6 +115,10 @@ func (s *CpfCnpjService) RemoveFromBlacklist(documentId string) error {
 }
 
 func (s *CpfCnpjService) FindByDocument(document string) ([]CpfCnpj, error) {
+	isValid, err := s.Validate(document)
+	if err != nil || !isValid {
+		return nil, errors.New(messages.DocumentInvalidError)
+	}
 	return s.repo.FindByDocument(document, false)
 }
 /*
